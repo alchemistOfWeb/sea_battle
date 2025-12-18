@@ -1,7 +1,8 @@
+# main.py
 from pathlib import Path
 
 from src.storage.csv_storage import CsvFleetRepository, CsvGameStateRepository
-from src.placement.player_setup import ConsoleFleetInput
+# from src.placement.player_setup import ConsoleFleetInput
 from src.placement.bot_setup import RandomFleetGenerator
 from src.validators.fleet_validator import validate_fleet_or_raise
 from src.engine.game_manager import GameManager
@@ -49,23 +50,24 @@ def main():
         run_cli_game(manager, state_repo=state_repo, resume=True)
         return
 
-    # New game
-    print("\n=== Player ship placement ===")
-    print("You will place ships on a 10x10 board. Ships must NOT touch, even diagonally.")
-    print("Required ship sizes: 4, 3, 3, 2, 2, 2, 1, 1, 1, 1")
-    print("Input format: one ship per line, e.g.: A1 A4  (or: 1 1 1 4)  (or: A1)\n")
+    # NEW GAME (player fleet must be loaded from CSV)
+    if not PLAYER_SHIPS.exists():
+        print(f"Missing {PLAYER_SHIPS}. Create it first, then run again.")
+        print("Format: ship_id,row,col (see README).")
+        return
 
-    player_fleet = ConsoleFleetInput().read_fleet_from_console()
+    player_fleet = player_repo.load()
     validate_fleet_or_raise(player_fleet)
-    player_repo.save(player_fleet)
-
+    # bot_repo.save(bot_fleet)
+    
     bot_fleet = RandomFleetGenerator().generate()
     validate_fleet_or_raise(bot_fleet)
     bot_repo.save(bot_fleet)
 
     manager = GameManager(player_fleet=player_fleet, bot_fleet=bot_fleet)
-    state_repo.init_new(manager.state)
 
+    # Start a fresh game_state.csv for a new game
+    state_repo.init_new(manager.state)
     run_cli_game(manager, state_repo=state_repo, resume=False)
 
 if __name__ == "__main__":

@@ -44,10 +44,6 @@ class FogCell(Enum):
     MISS = "o"
     HIT = "x"
 
-# class FogSymbol(Enum):
-#     UNKNOWN = "?"
-#     MISS = "o"
-#     HIT = "x"
 
 @dataclass
 class Ship:

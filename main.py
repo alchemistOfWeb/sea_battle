@@ -1,4 +1,3 @@
-# main.py
 from pathlib import Path
 
 from src.storage.csv_storage import CsvFleetRepository, CsvGameStateRepository
@@ -27,7 +26,7 @@ def main():
     state_repo = CsvGameStateRepository(GAME_STATE)
 
     resume_available = GAME_STATE.exists() and PLAYER_SHIPS.exists() and BOT_SHIPS.exists()
-
+    
     if resume_available:
         answer = input("Resume saved game? (y/n): ").strip().lower()
     else:
@@ -71,4 +70,7 @@ def main():
     run_cli_game(manager, state_repo=state_repo, resume=False)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt as e:
+        print(f"Exiting")
